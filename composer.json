@@ -1,0 +1,7 @@
+{
+  "name": "sailthru/sailthru-magento-extension",
+  "type": "magento-module",
+  "require": {
+    "magento-hackathon/magento-composer-installer": "*"
+  }
+}
