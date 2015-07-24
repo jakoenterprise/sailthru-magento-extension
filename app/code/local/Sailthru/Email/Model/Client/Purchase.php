@@ -93,14 +93,32 @@ class Sailthru_Email_Model_Client_Purchase extends Sailthru_Email_Model_Client
         try{
             $this->_eventType = 'placeOrder';
 
+$amount     = number_format($order->getGrandTotal(),2);
+            $samount     = number_format($order->getSubtotal(),2);
+            $tax         = number_format($order->getBaseTaxAmount(),2);
+            $shipping     = number_format($order->getBaseShippingAmount(),2);
+            $discounts     = number_format($order->getDiscountAmount(),2);
+            $shippingAddressData = $order->getShippingAddress()->getData();
+            $billingAddressData  = $order->getBillingAddress()->getData();
+            $shippingMethod      = $order->_data["shipping_description"];
+            $paymentMethod           = $order->getPayment()->getMethodInstance()->getTitle();
             $data = array(
-                    'email' => $order->getCustomerEmail(),
-                    'items' => $this->_getItems($order->getAllVisibleItems()),
-                    'adjustments' => $this->_getAdjustments($order),
-                    'message_id' => $this->getMessageId(),
-                    'send_template' => 'Purchase Receipt',
-                    'tenders' => $this->_getTenders($order)
-                    );
+               'email' => $order->getCustomerEmail(),
+               'items' => $this->_getItems($order->getAllVisibleItems()),
+               'adjustments' => $this->_getAdjustments($order),
+               'message_id' => $this->getMessageId(),
+               'send_template' => 'Purchase Receipt',
+               'tenders' => $this->_getTenders($order),
+               'order#'=> $order->getIncrementId(),
+               'subtotal'=> $samount,
+               'shipping_and_handling'=> $shipping,
+               'sale_tax'=> $tax,
+               'billing_address'=> $shippingAddressData,
+               'shipping_address'=> $billingAddressData,
+               'shipping_method'=> $shippingMethod,
+               'payment_method'=> $paymentMethod,
+               'store_credit'=> 0
+           );
             /**
              * Send order data to purchase API
              */
