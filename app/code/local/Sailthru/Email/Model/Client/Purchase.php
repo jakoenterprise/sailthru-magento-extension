@@ -180,13 +180,13 @@ class Sailthru_Email_Model_Client_Purchase extends Sailthru_Email_Model_Client
                     $_item['price'] = Mage::helper('sailthruemail')->formatAmount($item->getProduct()->getPrice());
 
                     // Uncomment to pass Images as a var. May require reconfiguring per Magento Product Configurations.
-                    // if (!isset($_item['vars']['image'])) {
-                    //     if ($item->getProduct()->hasImage()) {
-                    //          $_item['vars']['image'] = $item->getProduct()->getImageUrl();
-                    //     } elseif ($item->getProduct()->hasSmallImage()) {
-                    //          $_item['vars']['image'] = $item->getProduct()->getSmallImageUrl();
-                    //     }
-                    // }
+                     if (!isset($_item['vars']['image'])) {
+                         if ($item->getProduct()->hasImage()) {
+                              $_item['vars']['image'] = $item->getProduct()->getImageUrl();
+                         } elseif ($item->getProduct()->hasSmallImage()) {
+                              $_item['vars']['image'] = $item->getProduct()->getSmallImageUrl();
+                         }
+                    }
                     
                     if ($tags = $this->_getTags($item->getProductId())) {
                         $_item['tags'] = $tags;
