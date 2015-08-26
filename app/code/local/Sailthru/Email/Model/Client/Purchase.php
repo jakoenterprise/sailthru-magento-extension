@@ -161,6 +161,10 @@ class Sailthru_Email_Model_Client_Purchase extends Sailthru_Email_Model_Client
                     $_item['id'] = $options['simple_sku'];
                     $_item['title'] = $options['simple_name'];
                     $_item['vars'] = $this->_getVars($options);
+                    if($item->getProduct()->getSpecialPrice())
+                    {
+                         $_item['vars']['special_price']=Mage::helper('sailthruemail')->formatAmount($item->getProduct()->getSpecialPrice());
+                    }                    
                     $configurableSkus[] = $options['simple_sku'];
                 } elseif (!in_array($item->getSku(),$configurableSkus) && $item->getProductType() != 'bundle') {
                     $_item['id'] = $item->getSku();
