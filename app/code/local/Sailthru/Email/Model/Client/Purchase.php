@@ -188,7 +188,7 @@ class Sailthru_Email_Model_Client_Purchase extends Sailthru_Email_Model_Client
                          if ($item->getProduct()->hasImage()) {
                               $_item['vars']['image'] = $item->getProduct()->getImageUrl();
                          } elseif ($item->getProduct()->hasSmallImage()) {
-                              $_item['vars']['image'] = $item->getProduct()->getSmallImageUrl();
+                              $_item['vars']['image'] = $item->getProduct()->getSmallImageUrl(300,300);
                          }
                     }
                     
