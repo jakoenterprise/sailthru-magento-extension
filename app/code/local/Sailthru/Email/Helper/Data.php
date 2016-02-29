@@ -135,4 +135,45 @@ class Sailthru_Email_Helper_Data extends Mage_Core_Helper_Abstract {
         print_r($object);
         echo '</pre>';
     }
+    public function getSailthruProductImage($imageName, $dimension=null){
+    	if($imageName=="no_selection") return '';
+        $resizedImage           = '';
+        $dim                    = '';
+        $sailthruImageUrl       = Mage::getBaseUrl('media'). 'catalog' . DS . 'product' .DS .'cache' . DS. 'sailthru';
+        $mediaDir               = Mage::getBaseDir('media') . DS . 'catalog' . DS . 'product';
+        $sailthruDir            = $mediaDir .DS .'cache' . DS . 'sailthru';
+        if($dimension){
+            $pos    = strpos($dimension, 'x');
+            if($pos===false){
+                $sailthruDir            = $sailthruDir . DS . $dimension.'x';
+                $sailthruImageUrl       = $sailthruImageUrl . DS .$dimension.'x' ;
+            }else {
+                $sailthruDir            = $sailthruDir . DS . $dimension ;
+                $sailthruImageUrl       = $sailthruImageUrl . DS . $dimension ;
+            }
+        }
+        if (file_exists($sailthruDir . $imageName)) {
+            return $resizedImage      = $sailthruImageUrl.$imageName;
+        }elseif (file_exists($mediaDir . $imageName)) {
+            if (!is_dir($sailthruDir)) {
+                mkdir($sailthruDir);
+            }
+            //resizing image
+            $_image = new Varien_Image($mediaDir . $imageName);
+            $_image->constrainOnly(true);
+            $_image->keepAspectRatio(true);
+            $_image->keepFrame(true);
+            $_image->keepTransparency(true);
+            if($dimension){
+                $dim=  explode('x',$dimension);
+                if(isset($dim[1]))
+                $_image->resize($dim[0], $dim[1]);
+                else
+                $_image->resize($dim[0]);
+            }
+            $_image->save($sailthruDir . $imageName);
+            $resizedImage   = $sailthruImageUrl.$imageName;
+        }
+        return $resizedImage;
+    }    
 }

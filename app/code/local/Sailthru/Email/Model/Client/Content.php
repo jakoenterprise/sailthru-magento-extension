@@ -56,7 +56,7 @@ class Sailthru_Email_Model_Client_Content extends Sailthru_Email_Model_Client
     public function getProductData(Mage_Catalog_Model_Product $product)
     {
         try {
-            $data = array('url' => $product->getProductUrl(),
+            $data = array('url' => str_replace('admin.','www.', $product->getProductUrl()),
                 'title' => htmlspecialchars($product->getName()),
                 //'date' => '',
                 'spider' => 1,
@@ -97,7 +97,7 @@ class Sailthru_Email_Model_Client_Content extends Sailthru_Email_Model_Client
             );
 
             // Add product images
-            if(self::validateProductImage($product->getImage())) {
+           /* if(self::validateProductImage($product->getImage())) {
                 $data['images']['full'] = array ("url" => $product->getImageUrl());
             }
 
@@ -107,6 +107,35 @@ class Sailthru_Email_Model_Client_Content extends Sailthru_Email_Model_Client
 
             if(self::validateProductImage($product->getThumbnail())) {
                 $data['images']['thumb'] = array("url" => $product->getThumbnailUrl($width = 75, $height = 75));
+            }*/
+            if(self::validateProductImage($product->getImage())) {
+		        $pImage         = $product->getImage();
+		        $pImageUrl      = "";
+		        $pImageUrl      = Mage::helper('sailthruemail')->getSailthruProductImage($pImage);
+		        if(empty($pImageUrl)){
+		             $pImageUrl = $product->getImageUrl();
+		        }		        
+                $data['images']['full'] = array ("url" =>  str_replace('admin.','www.',$pImageUrl));
+            }
+
+            if(self::validateProductImage($product->getSmallImage())) {
+		        $pSmallImage     	= $product->getSmallImage();
+		        $pSmallImageUrl 	= "";
+		        $pSmallImageUrl     = Mage::helper('sailthruemail')->getSailthruProductImage($pSmallImage,'88x77');
+		        if(empty($pSmallImageUrl)){
+		             $pSmallImageUrl= $product->getSmallImageUrl($width = 88, $height = 77);
+		        }		        
+                $data['images']['smallImage'] = array("url" =>  str_replace('admin.','www.',$pSmallImageUrl));
+            }
+
+            if(self::validateProductImage($product->getThumbnail())) {
+		        $pThumbnail     	= $product->getThumbnail();
+		        $pThumbnailUrl 		= "";
+		        $pThumbnailUrl     	= Mage::helper('sailthruemail')->getSailthruProductImage($pThumbnail,'75x75');            	
+		        if(empty($pThumbnailUrl)){
+		              $pThumbnailUrl  = $product->getThumbnailUrl($width = 75, $height = 75);
+		        }           	
+                $data['images']['thumb'] = array("url" =>  str_replace('admin.','www.',$pThumbnailUrl));
             }
 
             return $data;

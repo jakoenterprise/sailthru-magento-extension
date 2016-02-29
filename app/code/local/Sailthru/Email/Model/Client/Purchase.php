@@ -180,18 +180,38 @@ class Sailthru_Email_Model_Client_Purchase extends Sailthru_Email_Model_Client
                         $_item['qty'] = intval($item->getQty());
                     }
 
-                    $_item['url'] = $item->getProduct()->getProductUrl();
+                    $_item['url'] = str_replace('admin.','www.',$item->getProduct()->getProductUrl());
                     $_item['price'] = Mage::helper('sailthruemail')->formatAmount($item->getProduct()->getPrice());
 
                     // Uncomment to pass Images as a var. May require reconfiguring per Magento Product Configurations.
-                     if (!isset($_item['vars']['image'])) {
+                   /*  if (!isset($_item['vars']['image'])) {
                          if ($item->getProduct()->hasImage()) {
                               $_item['vars']['image'] = $item->getProduct()->getImageUrl();
                          } elseif ($item->getProduct()->hasSmallImage()) {
                               $_item['vars']['image'] = $item->getProduct()->getSmallImageUrl(300,300);
                          }
-                    }
-                    
+                    }*/
+                     if (!isset($_item['vars']['image'])) {
+                         if ($item->getProduct()->hasImage()) {
+                                $pImage         = $item->getProduct()->getImage();
+                                $pImageUrl      = "";
+                                $pImageUrl  = Mage::helper('sailthruemail')->getSailthruProductImage($pImage);
+                                if(empty($pImageUrl)){
+                                        $pImageUrl  = $item->getProduct()->getImageUrl();
+                                }
+                                $_item['vars']['image'] = $pImageUrl;
+
+                         } elseif ($item->getProduct()->hasSmallImage()) {
+                                $pSmallImage            = $item->getProduct()->getSmallImage();
+                                $pSmallImageUrl         = "";
+                                $pSmallImageUrl     = Mage::helper('sailthruemail')->getSailthruProductImage($pSmallImage,'300x300');
+                                if(empty($pSmallImageUrl)){
+                                     $pSmallImageUrl= $item->getProduct()->getSmallImageUrl(300, 300);
+                                }
+                                $_item['vars']['image']=$pSmallImageUrl;
+
+                         }
+                     }                    
                     if ($tags = $this->_getTags($item->getProductId())) {
                         $_item['tags'] = $tags;
                     }
