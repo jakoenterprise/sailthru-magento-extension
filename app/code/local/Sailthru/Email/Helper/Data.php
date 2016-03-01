@@ -161,7 +161,7 @@ class Sailthru_Email_Helper_Data extends Mage_Core_Helper_Abstract {
             //resizing image
             $_image = new Varien_Image($mediaDir . $imageName);
             $_image->constrainOnly(true);
-            $_image->keepAspectRatio(true);
+            $_image->keepAspectRatio(false);
             $_image->keepFrame(true);
             $_image->keepTransparency(true);
             if($dimension){
