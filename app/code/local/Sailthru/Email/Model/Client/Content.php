@@ -61,8 +61,8 @@ class Sailthru_Email_Model_Client_Content extends Sailthru_Email_Model_Client
                 //'date' => '',
                 'spider' => 1,
                 'price' => $product->getPrice(),
-                'description' => urlencode($product->getDescription()),
-                'tags' => htmlspecialchars($product->getMetaKeyword()),
+                'description' => urlencode(strip_tags($product->getDescription())),
+                'tags' => htmlspecialchars($this->getProductMetaKeyword($product)),
                 'images' => array(),
                 'vars' => array('sku' => $product->getSku(),
                     'storeId' => '',
@@ -159,5 +159,50 @@ class Sailthru_Email_Model_Client_Content extends Sailthru_Email_Model_Client
 
         return true;
     }
-
+    /**
+     * Get MetaKeyword from Mage_Catalog_Model_Product
+     *
+     * @param Mage_Catalog_Model_Product $product
+     * @return array
+     */
+    public function getProductMetaKeyword($product){
+		$sailthru_tags	='';
+		$_product = Mage::getModel("catalog/product")->load($product->getId());
+		$currentCatIds = $_product->getCategoryIds();
+		$categoryCollection = Mage::getResourceModel('catalog/category_collection')
+							 ->addAttributeToSelect('url_key')
+							 ->addAttributeToFilter('entity_id', $currentCatIds)
+							 //->addAttributeToFilter('include_in_menu' , 1)
+							 ->addIsActiveFilter();
+		
+		$temp='';
+		$count=1;
+		foreach ($categoryCollection as $cat){
+			if($count==1)
+				$temp .= $cat->getUrlKey();
+			else
+				$temp .= ','.$cat->getUrlKey();
+			$count ++;
+		}
+		$sailthru_tags= $temp;	
+		
+		$arrColor  = $product->getAttributeText('color');
+		$tempColor='';
+		if(is_array($arrColor)){
+			foreach ($arrColor as $val){
+				$tempColor .= ','.$val;
+			}
+			$sailthru_tags .= strtolower($tempColor);	
+		}	
+		$_settings = Mage::getStoreConfig('weltpixel_selector/productpageoptions');
+		if($_settings['display_availability'] ){
+			if ($_product->isSaleable()):    
+				$sailthru_tags .= ',in-stock';
+			else :
+				$sailthru_tags .= ',out-of-stock';
+			endif;
+		}
+		return $sailthru_tags;
+	}
+    
 }

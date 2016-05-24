@@ -20,6 +20,7 @@ class Sailthru_Email_Model_Observer_Content extends Sailthru_Email_Model_Abstrac
         if($this->_isEnabled) {
             try{
                 $product = $observer->getEvent()->getProduct();
+                if($product->getStatus()=='2') return $this;
                 $response = Mage::getModel('sailthruemail/client_content')->deleteProduct($product);
             } catch (Exception $e) {
                 Mage::logException($e);
@@ -39,6 +40,7 @@ class Sailthru_Email_Model_Observer_Content extends Sailthru_Email_Model_Abstrac
        if($this->_isEnabled) {
             try{
                 $product = $observer->getEvent()->getProduct();
+                if($product->getStatus()=='2') return $this;
                 $response = Mage::getModel('sailthruemail/client_content')->saveProduct($product);
             } catch (Exception $e) {
                 Mage::logException($e);
