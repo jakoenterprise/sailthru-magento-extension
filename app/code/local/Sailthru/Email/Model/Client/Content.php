@@ -62,7 +62,7 @@ class Sailthru_Email_Model_Client_Content extends Sailthru_Email_Model_Client
                 'spider' => 1,
                 'price' => $product->getPrice(),
                 'description' => urlencode(strip_tags($product->getDescription())),
-                'tags' => htmlspecialchars($this->getProductMetaKeyword($product)),
+                'tags' => htmlspecialchars($this->getProductMetaKeyword($product->getId())),
                 'images' => array(),
                 'vars' => array('sku' => $product->getSku(),
                     'storeId' => '',
@@ -160,14 +160,16 @@ class Sailthru_Email_Model_Client_Content extends Sailthru_Email_Model_Client
         return true;
     }
     /**
-     * Get MetaKeyword from Mage_Catalog_Model_Product
+     * Get MetaKeywords from product Id
      *
-     * @param Mage_Catalog_Model_Product $product
+     * @param product Id
      * @return array
      */
-    public function getProductMetaKeyword($product){
-		$sailthru_tags	='';
-		$_product = Mage::getModel("catalog/product")->load($product->getId());
+    public function getProductMetaKeyword($productId){
+		$sailthru_tags	= '';
+		$originalStore  = Mage::app()->getStore(); // save the original store setting 
+		Mage::app()->setCurrentStore('default'); //switch to the default store
+		$_product 		= Mage::getModel("catalog/product")->load($productId);
 		$currentCatIds = $_product->getCategoryIds();
 		$categoryCollection = Mage::getResourceModel('catalog/category_collection')
 							 ->addAttributeToSelect('url_key')
@@ -186,13 +188,15 @@ class Sailthru_Email_Model_Client_Content extends Sailthru_Email_Model_Client
 		}
 		$sailthru_tags= $temp;	
 		
-		$arrColor  = $product->getAttributeText('color');
+		$arrColor  = $_product->getAttributeText('color');
 		$tempColor='';
 		if(is_array($arrColor)){
 			foreach ($arrColor as $val){
 				$tempColor .= ','.$val;
 			}
 			$sailthru_tags .= strtolower($tempColor);	
+		}else {
+			if($arrColor) $sailthru_tags .=','. strtolower($arrColor);
 		}	
 		$_settings = Mage::getStoreConfig('weltpixel_selector/productpageoptions');
 		if($_settings['display_availability'] ){
@@ -202,7 +206,9 @@ class Sailthru_Email_Model_Client_Content extends Sailthru_Email_Model_Client
 				$sailthru_tags .= ',out-of-stock';
 			endif;
 		}
+		
+		Mage::app()->setCurrentStore($originalStore->getId()); // switch back to the original
 		return $sailthru_tags;
-	}
+	}    
     
 }
