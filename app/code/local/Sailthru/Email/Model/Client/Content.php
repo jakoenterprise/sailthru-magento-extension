@@ -56,7 +56,7 @@ class Sailthru_Email_Model_Client_Content extends Sailthru_Email_Model_Client
     public function getProductData(Mage_Catalog_Model_Product $product)
     {
         try {
-            $data = array('url' => str_replace('admin.','www.', $product->getProductUrl()),
+            $data = array('url' => str_replace('index.php/','',str_replace('admin.','www.', $product->getProductUrl())),
                 'title' => htmlspecialchars($product->getName()),
                 //'date' => '',
                 'spider' => 1,
