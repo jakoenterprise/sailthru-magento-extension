@@ -92,7 +92,8 @@ class Sailthru_Email_Model_Client_Content extends Sailthru_Email_Model_Client
                     'isVirtual'  => $product->isVirtual(),
                     'isRecurring' => $product->isRecurring(),
                     'isInStock'  => $product->isInStock(),
-                    'weight'  => $product->getSku()
+                    'weight'  => $product->getSku(),
+                    'inventory'  => $product->getStockItem()->getStockQty()
                 )
             );
 
