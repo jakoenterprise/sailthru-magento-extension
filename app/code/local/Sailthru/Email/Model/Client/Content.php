@@ -56,6 +56,13 @@ class Sailthru_Email_Model_Client_Content extends Sailthru_Email_Model_Client
     public function getProductData(Mage_Catalog_Model_Product $product)
     {
         try {
+			if($product->getMsrpEnabled()==1){
+				$price = "";
+			}else if($product->getFinalPrice() < $product->getPrice()){
+				$price = $product->getFinalPrice()*100;
+			}else{
+				$price = $product->getPrice()*100;
+			}        	
             $data = array('url' => str_replace('index.php/','',str_replace('admin.','www.', $product->getProductUrl())),
                 'title' => htmlspecialchars($product->getName()),
                 //'date' => '',
@@ -63,6 +70,7 @@ class Sailthru_Email_Model_Client_Content extends Sailthru_Email_Model_Client
                 'price' => $product->getPrice(),
                 'description' => strip_tags($product->getDescription()),
                 'tags' => htmlspecialchars($this->getProductMetaKeyword($product->getId())),
+                'inventory'  => $product->getStockItem()->getStockQty(),
                 'images' => array(),
                 'vars' => array('sku' => $product->getSku(),
                     'storeId' => '',
@@ -92,8 +100,7 @@ class Sailthru_Email_Model_Client_Content extends Sailthru_Email_Model_Client
                     'isVirtual'  => $product->isVirtual(),
                     'isRecurring' => $product->isRecurring(),
                     'isInStock'  => $product->isInStock(),
-                    'weight'  => $product->getSku(),
-                    'inventory'  => $product->getStockItem()->getStockQty()
+                    'weight'  => $product->getSku()
                 )
             );
 
@@ -141,8 +148,6 @@ class Sailthru_Email_Model_Client_Content extends Sailthru_Email_Model_Client
 
             return $data;
 
-
-            return $data;
         } catch(Exception $e) {
             Mage::logException($e);
         }
