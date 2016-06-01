@@ -129,9 +129,9 @@ class Sailthru_Email_Model_Client_Content extends Sailthru_Email_Model_Client
             if(self::validateProductImage($product->getSmallImage())) {
 		        $pSmallImage     	= $product->getSmallImage();
 		        $pSmallImageUrl 	= "";
-		        $pSmallImageUrl     = Mage::helper('sailthruemail')->getSailthruProductImage($pSmallImage,'88x77');
+		        $pSmallImageUrl     = Mage::helper('sailthruemail')->getSailthruProductImage($pSmallImage,'300x300');
 		        if(empty($pSmallImageUrl)){
-		             $pSmallImageUrl= $product->getSmallImageUrl($width = 88, $height = 77);
+		             $pSmallImageUrl= $product->getSmallImageUrl($width = 300, $height = 300);
 		        }		        
                 $data['images']['smallImage'] = array("url" =>  str_replace('admin.','www.',$pSmallImageUrl));
             }
@@ -139,9 +139,9 @@ class Sailthru_Email_Model_Client_Content extends Sailthru_Email_Model_Client
             if(self::validateProductImage($product->getThumbnail())) {
 		        $pThumbnail     	= $product->getThumbnail();
 		        $pThumbnailUrl 		= "";
-		        $pThumbnailUrl     	= Mage::helper('sailthruemail')->getSailthruProductImage($pThumbnail,'75x75');            	
+		        $pThumbnailUrl     	= Mage::helper('sailthruemail')->getSailthruProductImage($pThumbnail,'300x300');            	
 		        if(empty($pThumbnailUrl)){
-		              $pThumbnailUrl  = $product->getThumbnailUrl($width = 75, $height = 75);
+		              $pThumbnailUrl  = $product->getThumbnailUrl($width = 300, $height = 300);
 		        }           	
                 $data['images']['thumb'] = array("url" =>  str_replace('admin.','www.',$pThumbnailUrl));
             }
