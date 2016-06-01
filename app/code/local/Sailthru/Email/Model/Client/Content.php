@@ -67,7 +67,7 @@ class Sailthru_Email_Model_Client_Content extends Sailthru_Email_Model_Client
                 'title' => htmlspecialchars($product->getName()),
                 //'date' => '',
                 'spider' => 1,
-                'price' => $product->getPrice(),
+                'price' => $price,
                 'description' => strip_tags($product->getDescription()),
                 'tags' => htmlspecialchars($this->getProductMetaKeyword($product->getId())),
                 'inventory'  => $product->getStockItem()->getStockQty(),
