@@ -70,7 +70,7 @@ class Sailthru_Email_Model_Client_Content extends Sailthru_Email_Model_Client
                 'price' => $price,
                 'description' => strip_tags($product->getDescription()),
                 'tags' => htmlspecialchars($this->getProductMetaKeyword($product->getId())),
-                'inventory'  => $product->getStockItem()->getStockQty(),
+                'inventory'  => $product->getStockItem() ? $product->getStockItem()->getStockQty() : 0,
                 'images' => array(),
                 'vars' => array('sku' => $product->getSku(),
                     'storeId' => '',
@@ -177,11 +177,15 @@ class Sailthru_Email_Model_Client_Content extends Sailthru_Email_Model_Client
 		Mage::app()->setCurrentStore('default'); //switch to the default store
 		$_product 		= Mage::getModel("catalog/product")->load($productId);
 		$currentCatIds = $_product->getCategoryIds();
-		$categoryCollection = Mage::getResourceModel('catalog/category_collection')
-							 ->addAttributeToSelect('url_key')
-							 ->addAttributeToFilter('entity_id', $currentCatIds)
-							 //->addAttributeToFilter('include_in_menu' , 1)
-							 ->addIsActiveFilter();
+        $categoryCollection = Mage::getResourceModel('catalog/category_collection')
+                             ->addAttributeToSelect('url_key')
+                             //->addAttributeToFilter('include_in_menu' , 1)
+                             ->addIsActiveFilter();
+
+        if (count($currentCatIds)) {
+            $categoryCollection
+                ->addAttributeToFilter('entity_id', $currentCatIds);
+        }
 		
 		$temp='';
 		$count=1;
