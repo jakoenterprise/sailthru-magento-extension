@@ -136,6 +136,7 @@ class Sailthru_Email_Model_Client_User extends Sailthru_Email_Model_Client
                     'Store Code' => Mage::app()->getStore()->getCode(),
                     'Store Id' => Mage::app()->getStore()->getId(),
                     'fullName' => $subscriber->getSubscriberFullName(),
+                    'source' => 'register',
                 ),
                 'fields' => array('keys' => 1),
                 //Hacky way to prevent user from getting campaigns if they are not subscribed
