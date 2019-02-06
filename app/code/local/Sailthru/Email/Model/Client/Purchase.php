@@ -47,6 +47,33 @@ class Sailthru_Email_Model_Client_Purchase extends Sailthru_Email_Model_Client
                 return $this->handleError($response, $quote, $email);
             }
             
+			/*****Add product sku in following items for price alert*****/
+            $productSku = array();
+			$sailthru_userdata = $this->apiGet('user', array('id' => $email));
+			if(isset($sailthru_userdata['vars']['following_items'])) {
+					$sailthru_followingItems = $sailthru_userdata['vars']['following_items'];
+					$productSku = array_values($sailthru_followingItems);
+			}
+			foreach ($quote->getAllVisibleItems() as $item) {
+				if($item->getProductType() == 'configurable') {
+						$productSku[] = $item->getProduct()->getData('sku');
+				}
+			}
+			if($productSku) {
+				$productSku = array_unique($productSku);
+				$data = array(
+						"id" => $email,
+						"vars" => array("following_items" => $productSku)
+						);
+				$response = $this->apiPost('user', $data);
+				if (array_key_exists('error',$response)){
+					return $this->handleError($response, $quote, $email);
+				}
+			}
+			/********************************************************/
+
+			
+			
             Mage::getSingleton('checkout/session')->setSailthuAbandonedCartId($quote->getId());
             
             return true;
@@ -130,7 +157,28 @@ class Sailthru_Email_Model_Client_Purchase extends Sailthru_Email_Model_Client
              * Send order data to purchase API
              */
             $responsePurchase = $this->apiPost('purchase', $data);
-
+			
+			/****Update product sku in following items for price alert****/
+            $productSku = array();
+			foreach ($order->getAllVisibleItems() as $item) {
+				if($item->getProductType() == 'configurable') {
+					$productSku[] = $item->getProduct()->getData('sku');
+				}
+			}
+            $sailthru_userdata = $this->apiGet('user', array('id' => $order->getCustomerEmail()));
+			if(isset($sailthru_userdata['vars']['following_items']) && $productSku) {
+				$sailthru_followingItems = $sailthru_userdata['vars']['following_items'];
+				$sailthru_followingItems = array_values($sailthru_followingItems);
+				$sailthru_followingItems = array_diff($sailthru_followingItems,$productSku);
+				$sailthru_followingItems = array_unique($sailthru_followingItems);
+				$data = array(
+						"id" => $order->getCustomerEmail(),
+						"vars" => array("following_items" => $sailthru_followingItems)
+						);
+				$response = $this->apiPost('user', $data);
+			}
+            /*************************************************/
+			
             /**
              * Send customer data to user API
              */
