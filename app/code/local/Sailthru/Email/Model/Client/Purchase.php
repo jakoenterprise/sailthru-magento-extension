@@ -49,11 +49,11 @@ class Sailthru_Email_Model_Client_Purchase extends Sailthru_Email_Model_Client
             
 			/*****Add product sku in following items for price alert*****/
             $productSku = array();
-			$sailthru_userdata = $this->apiGet('user', array('id' => $email));
+			/*$sailthru_userdata = $this->apiGet('user', array('id' => $email));
 			if(isset($sailthru_userdata['vars']['following_items'])) {
 					$sailthru_followingItems = $sailthru_userdata['vars']['following_items'];
 					$productSku = array_values($sailthru_followingItems);
-			}
+			}*/
 			foreach ($quote->getAllVisibleItems() as $item) {
 				if($item->getProductType() == 'configurable') {
 						$productSku[] = $item->getProduct()->getData('sku');
