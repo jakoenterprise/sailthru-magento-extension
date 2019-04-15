@@ -59,17 +59,17 @@ class Sailthru_Email_Model_Client_Purchase extends Sailthru_Email_Model_Client
 						$productSku[] = $item->getProduct()->getData('sku');
 				}
 			}
-			if($productSku) {
-				$productSku = array_unique($productSku);
-				$data = array(
-						"id" => $email,
-						"vars" => array("following_items" => $productSku)
-						);
-				$response = $this->apiPost('user', $data);
-				if (array_key_exists('error',$response)){
-					return $this->handleError($response, $quote, $email);
-				}
+			#if($productSku) {
+			$productSku = array_unique($productSku);
+			$data = array(
+					"id" => $email,
+					"vars" => array("following_items" => $productSku)
+					);
+			$response = $this->apiPost('user', $data);
+			if (array_key_exists('error',$response)){
+				return $this->handleError($response, $quote, $email);
 			}
+			#}
 			/********************************************************/
 
 			
